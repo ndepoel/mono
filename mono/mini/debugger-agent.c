@@ -76,6 +76,8 @@
 #include <mono/utils/w32api.h>
 #include "mini.h"
 #include "seq-points.h"
+#include "aot-runtime.h"
+#include "mini-runtime.h"
 #include "interp/interp.h"
 
 /*
@@ -1046,11 +1048,11 @@ mono_debugger_agent_init (void)
 	/* Needed by the hash_table_new_type () call below */
 	mono_gc_base_init ();
 
-	thread_to_tls = mono_g_hash_table_new_type ((GHashFunc)mono_object_hash, NULL, MONO_HASH_KEY_GC, MONO_ROOT_SOURCE_DEBUGGER, "thread-to-tls table");
+	thread_to_tls = mono_g_hash_table_new_type ((GHashFunc)mono_object_hash, NULL, MONO_HASH_KEY_GC, MONO_ROOT_SOURCE_DEBUGGER, NULL, "Debugger TLS Table");
 
-	tid_to_thread = mono_g_hash_table_new_type (NULL, NULL, MONO_HASH_VALUE_GC, MONO_ROOT_SOURCE_DEBUGGER, "tid-to-thread table");
+	tid_to_thread = mono_g_hash_table_new_type (NULL, NULL, MONO_HASH_VALUE_GC, MONO_ROOT_SOURCE_DEBUGGER, NULL, "Debugger Thread Table");
 
-	tid_to_thread_obj = mono_g_hash_table_new_type (NULL, NULL, MONO_HASH_VALUE_GC, MONO_ROOT_SOURCE_DEBUGGER, "tid-to-thread object table");
+	tid_to_thread_obj = mono_g_hash_table_new_type (NULL, NULL, MONO_HASH_VALUE_GC, MONO_ROOT_SOURCE_DEBUGGER, NULL, "Debugger Thread Object Table");
 
 	pending_assembly_loads = g_ptr_array_new ();
 	domains = g_hash_table_new (mono_aligned_addr_hash, NULL);
@@ -2027,7 +2029,7 @@ objrefs_init (void)
 {
 	objrefs = g_hash_table_new_full (NULL, NULL, NULL, free_objref);
 	obj_to_objref = g_hash_table_new (NULL, NULL);
-	suspended_objs = mono_g_hash_table_new_type ((GHashFunc)mono_object_hash, NULL, MONO_HASH_KEY_GC, MONO_ROOT_SOURCE_DEBUGGER, "suspended objects table");
+	suspended_objs = mono_g_hash_table_new_type ((GHashFunc)mono_object_hash, NULL, MONO_HASH_KEY_GC, MONO_ROOT_SOURCE_DEBUGGER, NULL, "Debugger Suspended Object Table");
 }
 
 static void
@@ -2607,11 +2609,11 @@ get_top_method_ji (gpointer ip, MonoDomain **domain, gpointer *out_ip)
 
 		g_assert (ext->interp_exit);
 		frame = ext->interp_exit_data;
-		ji = mono_interp_frame_get_jit_info (frame);
+		ji = mini_get_interp_callbacks ()->frame_get_jit_info (frame);
 		if (domain)
 			*domain = mono_domain_get ();
 		if (out_ip)
-			*out_ip = mono_interp_frame_get_ip (frame);
+			*out_ip = mini_get_interp_callbacks ()->frame_get_ip (frame);
 	}
 	return ji;
 }
@@ -4102,7 +4104,7 @@ thread_startup (MonoProfiler *prof, uintptr_t tid)
 	tls = il2cpp_gc_alloc_fixed(sizeof(DebuggerTlsData));
 #else
 	tls = g_new0 (DebuggerTlsData, 1);
-	MONO_GC_REGISTER_ROOT_SINGLE (tls->thread, MONO_ROOT_SOURCE_DEBUGGER, "debugger thread reference");
+	MONO_GC_REGISTER_ROOT_SINGLE (tls->thread, MONO_ROOT_SOURCE_DEBUGGER, NULL, "Debugger Thread Reference");
 #endif
 	tls->thread = thread;
 	mono_native_tls_set_value (debugger_tls_id, tls);
@@ -4502,7 +4504,7 @@ insert_breakpoint (MonoSeqPointInfo *seq_points, MonoDomain *domain, MonoJitInfo
 		DEBUG_PRINTF (1, "[dbg] Attempting to insert seq point at dead IL offset %d, ignoring.\n", (int)bp->il_offset);
 	} else if (count == 0) {
 		if (ji->is_interp) {
-			mono_interp_set_breakpoint (ji, inst->ip);
+			mini_get_interp_callbacks ()->set_breakpoint (ji, inst->ip);
 		} else {
 #ifdef MONO_ARCH_SOFT_DEBUG_SUPPORTED
 			mono_arch_set_breakpoint (ji, inst->ip);
@@ -4534,7 +4536,7 @@ remove_breakpoint (BreakpointInstance *inst)
 
 	if (count == 1 && inst->native_offset != SEQ_POINT_NATIVE_OFFSET_DEAD_CODE) {
 		if (ji->is_interp)
-			mono_interp_clear_breakpoint (ji, ip);
+			mini_get_interp_callbacks ()->clear_breakpoint (ji, ip);
 		else
 			mono_arch_clear_breakpoint (ji, ip);
 		DEBUG_PRINTF (1, "[dbg] Clear breakpoint at %s [%p].\n", mono_method_full_name (jinfo_get_method (ji), TRUE), ip);
@@ -4666,7 +4668,7 @@ set_bp_in_method (MonoDomain *domain, MonoMethod *method, MonoSeqPointInfo *seq_
 			ji = mono_jit_info_table_find (domain, (char *)code);
 		} else {
 			/* Might be interpreted */
-			ji = mono_interp_find_jit_info (domain, method);
+			ji = mini_get_interp_callbacks ()->find_jit_info (domain, method);
 		}
 		g_assert (ji);
 	}
@@ -5146,7 +5148,7 @@ get_this_addr (StackFrame *frame)
 {
 #ifndef IL2CPP_MONO_DEBUGGER
 	if (frame->ji->is_interp)
-		return mono_interp_frame_get_this (frame->interp_frame);
+		return mini_get_interp_callbacks ()->frame_get_this (frame->interp_frame);
 
 	MonoDebugVarInfo *var = frame->jit->this_var;
 	if ((var->index & MONO_DEBUG_VAR_ADDRESS_MODE_FLAGS) != MONO_DEBUG_VAR_ADDRESS_MODE_REGOFFSET)
@@ -5321,8 +5323,8 @@ process_breakpoint (DebuggerTlsData *tls, gboolean from_signal)
 
 		g_assert (ext->interp_exit);
 		frame = ext->interp_exit_data;
-		ji = mono_interp_frame_get_jit_info (frame);
-		ip = mono_interp_frame_get_ip (frame);
+		ji = mini_get_interp_callbacks ()->frame_get_jit_info (frame);
+		ip = mini_get_interp_callbacks ()->frame_get_ip (frame);
 	}
 #endif
 
@@ -5891,7 +5893,7 @@ start_single_stepping (void)
 
 	if (val == 1) {
 		mono_arch_start_single_stepping ();
-		mono_interp_start_single_stepping ();
+		mini_get_interp_callbacks ()->start_single_stepping ();
 	}
 #else
 	g_assert_not_reached ();
@@ -5908,7 +5910,7 @@ stop_single_stepping (void)
 
 	if (val == 0) {
 		mono_arch_stop_single_stepping ();
-		mono_interp_stop_single_stepping ();
+		mini_get_interp_callbacks ()->stop_single_stepping ();
 	}
 #else
 	g_assert_not_reached ();
@@ -10731,7 +10733,7 @@ thread_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 
 		if (tls->frames [0]->ji->is_interp) {
 			MonoJitTlsData *jit_data = ((MonoThreadInfo*)thread->thread_info)->jit_data;
-			mono_interp_set_resume_state (jit_data, NULL, NULL, tls->frames [0]->interp_frame, (guint8*)tls->frames [0]->ji->code_start + sp.native_offset);
+			mini_get_interp_callbacks ()->set_resume_state (jit_data, NULL, NULL, tls->frames [0]->interp_frame, (guint8*)tls->frames [0]->ji->code_start + sp.native_offset);
 		} else {
 			MONO_CONTEXT_SET_IP (&tls->restore_state.ctx, (guint8*)tls->frames [0]->ji->code_start + sp.native_offset);
 		}
@@ -10881,7 +10883,7 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 				if (frame->ji->is_interp) {
 					guint8 *addr;
 
-					addr = mono_interp_frame_get_arg (frame->interp_frame, pos);
+					addr = mini_get_interp_callbacks ()->frame_get_arg (frame->interp_frame, pos);
 
 					buffer_add_value_full (buf, sig->params [pos], addr, frame->domain, FALSE, NULL);
 				} else {
@@ -10908,7 +10910,7 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 				if (frame->ji->is_interp) {
 					guint8 *addr;
 
-					addr = mono_interp_frame_get_local (frame->interp_frame, pos);
+					addr = mini_get_interp_callbacks ()->frame_get_local (frame->interp_frame, pos);
 
 					buffer_add_value_full (buf, header->locals [pos], addr, frame->domain, FALSE, NULL);
 				} else {
@@ -10938,7 +10940,7 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 				if (frame->ji->is_interp) {
 					guint8 *addr;
 
-					addr = mono_interp_frame_get_this (frame->interp_frame);
+					addr = mini_get_interp_callbacks ()->frame_get_this (frame->interp_frame);
 
 					buffer_add_value_full (buf, &frame->actual_method->klass->this_arg, addr, frame->domain, FALSE, NULL);
 				} else {
@@ -10964,7 +10966,7 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 				if (frame->ji->is_interp) {
 					guint8 *addr;
 
-					addr = mono_interp_frame_get_this (frame->interp_frame);
+					addr = mini_get_interp_callbacks ()->frame_get_this (frame->interp_frame);
 
 					buffer_add_value_full (buf, &frame->api_method->klass->byval_arg, addr, frame->domain, FALSE, NULL);
 				} else {
@@ -11041,9 +11043,9 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 				guint8 *addr;
 
 				if (is_arg)
-					addr = mono_interp_frame_get_arg (frame->interp_frame, pos);
+					addr = mini_get_interp_callbacks ()->frame_get_arg (frame->interp_frame, pos);
 				else
-					addr = mono_interp_frame_get_local (frame->interp_frame, pos);
+					addr = mini_get_interp_callbacks ()->frame_get_local (frame->interp_frame, pos);
 				set_interp_var (t, addr, val_buf);
 			} else {
 				set_var (t, var, &frame->ctx, frame->domain, val_buf, frame->reg_locations, &tls->restore_state.ctx);
@@ -11084,7 +11086,7 @@ frame_commands (int command, guint8 *p, guint8 *end, Buffer *buf)
 		if (frame->ji->is_interp) {
 			guint8 *addr;
 
-			addr = mono_interp_frame_get_this (frame->interp_frame);
+			addr = mini_get_interp_callbacks ()->frame_get_this (frame->interp_frame);
 			set_interp_var (&frame->actual_method->klass->this_arg, addr, val_buf);
 		} else {
 			var = jit->this_var;

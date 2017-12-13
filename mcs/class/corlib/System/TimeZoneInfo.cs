@@ -1,4 +1,4 @@
-
+ 
 /*
  * System.TimeZoneInfo
  *
@@ -163,6 +163,12 @@ namespace System
 			} else if (IsWindows) {
 				return GetLocalTimeZoneInfoWinRTFallback ();
 			}
+#endif
+
+#if UNITY
+			var localUnity = CreateLocalUnity ();
+			if (localUnity != null)
+				return localUnity;
 #endif
 
 			var tz = Environment.GetEnvironmentVariable ("TZ");

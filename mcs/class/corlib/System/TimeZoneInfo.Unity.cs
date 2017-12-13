@@ -60,7 +60,7 @@ namespace System {
 		{
 			Int64[] data;
 		    string[] names;
-		    if (!System.CurrentSystemTimeZone.GetTimeZoneData (2017, out data, out names))
+		    if (!System.CurrentSystemTimeZone.GetTimeZoneData (1970, out data, out names))
 				throw new NotSupportedException ("Can't get timezone name.");
 
 			TimeSpan utcOffsetTS = TimeSpan.FromTicks(data[(int)TimeZoneData.UtcOffsetIdx]);
@@ -74,7 +74,7 @@ namespace System {
 		    for(int year = 1970; year <= 2037; year++)
 		    {	    
 				if (!System.CurrentSystemTimeZone.GetTimeZoneData (year, out data, out names))
-				    throw new NotSupportedException ("Can't get timezone name.");
+					continue;
 				
 				DaylightTime dlt = new DaylightTime (new DateTime (data[(int)TimeZoneData.DaylightSavingStartIdx]),
 								     new DateTime (data[(int)TimeZoneData.DaylightSavingEndIdx]),
@@ -82,6 +82,9 @@ namespace System {
 				
 				DateTime dltStartTime = new DateTime(1, 1, 1).Add(dlt.Start.TimeOfDay);
 				DateTime dltEndTime = new DateTime(1, 1, 1).Add(dlt.End.TimeOfDay);
+
+				if (dltStartTime == dltEndTime)
+					continue;
 
 				TimeZoneInfo.TransitionTime startTime = TimeZoneInfo.TransitionTime.CreateFixedDateRule(dltStartTime, dlt.Start.Month, dlt.Start.Day);
 				TimeZoneInfo.TransitionTime endTime = TimeZoneInfo.TransitionTime.CreateFixedDateRule(dltEndTime, dlt.End.Month, dlt.End.Day);

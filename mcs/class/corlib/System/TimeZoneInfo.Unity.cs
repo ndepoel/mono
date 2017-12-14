@@ -60,10 +60,10 @@ namespace System {
 		{
 			Int64[] data;
 		    string[] names;
-		    if (!System.CurrentSystemTimeZone.GetTimeZoneData (1970, out data, out names))
+		    if (!System.CurrentSystemTimeZone.GetTimeZoneData (1973, out data, out names))
 				throw new NotSupportedException ("Can't get timezone name.");
 
-			TimeSpan utcOffsetTS = TimeSpan.FromTicks(data[(int)TimeZoneData.UtcOffsetIdx]);
+		    TimeSpan utcOffsetTS = TimeSpan.FromTicks(data[(int)TimeZoneData.UtcOffsetIdx]);
 		    char utcOffsetSign = (utcOffsetTS >= TimeSpan.Zero) ? '+' : '-';
 		    string displayName = "(GMT" + utcOffsetSign + utcOffsetTS.ToString(@"hh\:mm") + ") Local Time";
 		    string standardDisplayName = names[(int)TimeZoneNames.StandardNameIdx];
@@ -71,7 +71,7 @@ namespace System {
 		    
 		    //Create The Adjustment Rules For This TimeZoneInfo.
 		    var adjustmentList = new List<TimeZoneInfo.AdjustmentRule>();
-		    for(int year = 1970; year <= 2037; year++)
+		    for(int year = 1973; year <= 2037; year++)
 		    {	    
 				if (!System.CurrentSystemTimeZone.GetTimeZoneData (year, out data, out names))
 					continue;
@@ -83,15 +83,15 @@ namespace System {
 				DateTime dltStartTime = new DateTime(1, 1, 1).Add(dlt.Start.TimeOfDay);
 				DateTime dltEndTime = new DateTime(1, 1, 1).Add(dlt.End.TimeOfDay);
 
-				if (dltStartTime == dltEndTime)
+				if (dlt.Start == dlt.End)
 					continue;
 
 				TimeZoneInfo.TransitionTime startTime = TimeZoneInfo.TransitionTime.CreateFixedDateRule(dltStartTime, dlt.Start.Month, dlt.Start.Day);
 				TimeZoneInfo.TransitionTime endTime = TimeZoneInfo.TransitionTime.CreateFixedDateRule(dltEndTime, dlt.End.Month, dlt.End.Day);
 				
 
-				//mktime only supports dates starting in 1970, so create an adjustment rule for years before 1970 following 1970s rules 
-				if (year == 1970)
+				//mktime only supports dates starting in 1973, so create an adjustment rule for years before 1973 following 1973s rules 
+				if (year == 1973)
 				{
 				    TimeZoneInfo.AdjustmentRule firstRule = TimeZoneInfo.AdjustmentRule.CreateAdjustmentRule(DateTime.MinValue,
 															     new DateTime(1969, 12, 31),

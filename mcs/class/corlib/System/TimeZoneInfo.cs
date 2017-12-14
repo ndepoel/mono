@@ -1,5 +1,4 @@
- 
-/*
+ /*
  * System.TimeZoneInfo
  *
  * Author(s)
@@ -166,19 +165,27 @@ namespace System
 #endif
 
 #if UNITY
-			var localUnity = CreateLocalUnity ();
-			if (localUnity != null)
-				return localUnity;
+			var localTimeZoneFallback = CreateLocalUnity();
+			if(localTimeZoneFallback == null)
+			    localTimeZoneFallback = Utc;
 #endif
 
 			var tz = Environment.GetEnvironmentVariable ("TZ");
 			if (tz != null) {
 				if (tz == String.Empty)
+#if UNITY
+					return localTimeZoneFallback;
+#else
 					return Utc;
+#endif
 				try {
 					return FindSystemTimeZoneByFileName (tz, Path.Combine (TimeZoneDirectory, tz));
 				} catch {
+#if UNITY
+					return localTimeZoneFallback;
+#else
 					return Utc;
+#endif
 				}
 			}
 
@@ -197,7 +204,11 @@ namespace System
 				}
 			}
 
+#if UNITY
+			return localTimeZoneFallback;
+#else
 			return Utc;
+#endif
 		}
 
 		static TimeZoneInfo FindSystemTimeZoneByIdCore (string id)

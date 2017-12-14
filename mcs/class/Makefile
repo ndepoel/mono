@@ -358,7 +358,8 @@ unityaot_dirs := \
 		System.Web.Services \
 		System.Reflection.Context \
 		System.Windows \
-		System.Xml.Serialization, $(mobile_common_dirs))	\
+		System.Xml.Serialization \
+		System.Runtime.CompilerServices.Unsafe, $(mobile_common_dirs))	\
 	System.Drawing			\
 	$(pcl_facade_dirs)
 

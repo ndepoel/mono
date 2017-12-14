@@ -141,7 +141,7 @@ unity_sources = \
 	unity-memory-info.h \
 	unity-utils.c   \
 	unity-utils.h	\
-	icall-unity.c
+	unity-icall.c
 
 common_sources = \
 	$(platform_sources)	\

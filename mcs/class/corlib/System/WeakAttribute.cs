@@ -1,6 +1,6 @@
 using System;
 
-#if MOBILE
+#if MOBILE && !UNITY
 namespace System {
 
 [AttributeUsage(AttributeTargets.Field)]

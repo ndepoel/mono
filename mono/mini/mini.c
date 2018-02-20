@@ -67,6 +67,8 @@
 #include "mini-gc.h"
 #include "debugger-agent.h"
 
+#include <jitprofiling.h>
+
 static gpointer mono_jit_compile_method_with_opt (MonoMethod *method, guint32 opt, MonoException **ex);
 
 /* helper methods signature */
@@ -5315,6 +5317,53 @@ mini_free_jit_domain_info (MonoDomain *domain)
 	domain->runtime_info = NULL;
 }
 
+struct
+{
+    void* dummy;
+} vtune_profiler;
+
+void vtune_profiler_jit_end(MonoProfiler *prof, MonoMethod *method, MonoJitInfo* jinfo, int result)
+{
+    iJIT_Method_Load_V2 jmethod = {0};
+    MonoDebugSourceLocation *location;
+
+    if (iJIT_IsProfilingActive() != iJIT_SAMPLING_ON)
+        return;
+
+    jmethod.method_id = iJIT_GetNewMethodID();
+    jmethod.method_name = mono_method_half_name(method, TRUE);
+    jmethod.class_file_name = mono_type_full_name(&method->klass->byval_arg);
+    jmethod.module_name = (char*)method->klass->image->module_name;
+    jmethod.method_load_address = jinfo->code_start;
+    jmethod.method_size = jinfo->code_size;
+
+    location = mono_debug_lookup_source_location(method, (guint32)jinfo->code_start, mono_domain_get());
+    if (location)
+    {
+        jmethod.source_file_name = location->source_file;
+        jmethod.line_number_size = 1;
+        jmethod.line_number_table = (LineNumberInfo*)g_malloc(sizeof(LineNumberInfo));
+        jmethod.line_number_table[0].Offset = location->il_offset;
+        jmethod.line_number_table[0].LineNumber = location->row;
+    }
+
+    iJIT_NotifyEvent(iJVM_EVENT_TYPE_METHOD_LOAD_FINISHED_V2, (void*)&jmethod);
+
+    if (location)
+    {
+        g_free(jmethod.line_number_table);
+        mono_debug_free_source_location(location);
+    }
+}
+
+void vtune_profiler_shutdown(MonoProfiler *prof)
+{
+    if (iJIT_IsProfilingActive() == iJIT_SAMPLING_ON)
+    {
+        iJIT_NotifyEvent(iJVM_EVENT_TYPE_SHUTDOWN, NULL);
+    }
+}
+
 MonoDomain *
 mini_init (const char *filename, const char *runtime_version)
 {
@@ -5380,6 +5429,11 @@ mini_init (const char *filename, const char *runtime_version)
 		mono_dont_free_domains = TRUE;
 		mono_using_xdebug = TRUE;
 	}
+    
+    /* Install hooks to notify the Intel vTune profiler of JIT compilation events */
+    mono_profiler_install ((MonoProfiler*)&vtune_profiler, &vtune_profiler_shutdown);
+    mono_profiler_set_events (MONO_PROFILE_JIT_COMPILATION);
+    mono_profiler_install_jit_end (&vtune_profiler_jit_end);
 
 #ifdef ENABLE_LLVM
 	mono_llvm_init ();

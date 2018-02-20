@@ -175,7 +175,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__i386__;TARGET_X86;i386;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -195,9 +195,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib32;$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
@@ -220,7 +220,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0\glib;$(MONO_DEPENDENCIES_PREFIX)\lib\glib-2.0\include;..\mono\;..\mono\jit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0\glib;$(MONO_DEPENDENCIES_PREFIX)\lib\glib-2.0\include;..\mono\;..\mono\jit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__x86_64__;WIN64;_WIN64;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -238,9 +238,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib64;$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <ImportLibrary>$(Platform)_$(Configuration)/lib/$(TargetName).lib</ImportLibrary>
       <TargetMachine>MachineX64</TargetMachine>
@@ -255,7 +255,7 @@
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;__i386__;TARGET_X86;i386;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -278,9 +278,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib32;$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -301,7 +301,7 @@
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0\glib;$(MONO_DEPENDENCIES_PREFIX)\lib\glib-2.0\include;..\mono\;..\mono\jit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0;$(MONO_DEPENDENCIES_PREFIX)\include\glib-2.0\glib;$(MONO_DEPENDENCIES_PREFIX)\lib\glib-2.0\include;..\mono\;..\mono\jit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;__x86_64__;WIN64;_WIN64;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -323,9 +323,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;glib-2.0.lib;ws2_32.lib;gthread-2.0.lib;Psapi.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib64;$(Platform)_$(Configuration)/lib;$(MONO_DEPENDENCIES_PREFIX)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)libmono.pdb</ProgramDatabaseFile>
@@ -342,7 +342,7 @@
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>TARGET_X86;_DEBUG;__i386__;TARGET_X86;i386;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -365,9 +365,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib32;$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -388,7 +388,7 @@
       <Optimization>Disabled</Optimization>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;__x86_64__;TARGET_AMD64;WIN64;_WIN64;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -410,9 +410,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib64;$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(TargetDir)$(TargetName).pdb</ProgramDatabaseFile>
@@ -429,7 +429,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__i386__;TARGET_X86;i386;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -449,9 +449,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib32;$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
@@ -474,7 +474,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__x86_64__;TARGET_AMD64;WIN64;_WIN64;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -492,9 +492,9 @@
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
     </ProjectReference>
     <Link>
-      <AdditionalDependencies>version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>jitprofiling.lib;version.lib;libgc.lib;eglib.lib;ws2_32.lib;Psapi.lib;winmm.lib;mswsock.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>$(OutDir)mono.dll</OutputFile>
-      <AdditionalLibraryDirectories>$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../vtune/lib64;$(Platform)_$(Configuration)/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>mono.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ImportLibrary>$(Platform)_$(Configuration)/lib/$(TargetName).lib</ImportLibrary>
@@ -510,7 +510,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__i386__;TARGET_ARM;i386;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -539,7 +539,7 @@
       <Optimization>MinSpace</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vtune\include;..\libgc\include;..\;..\eglib\src;..\mono;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;__x86_64__;TARGET_AMD64;WIN64;_WIN64;WIN32;_WIN32;__WIN32__;_WINDOWS;WINDOWS;PLATFORM_WIN32;TARGET_WIN32;_CRT_SECURE_NO_DEPRECATE;GC_NOT_DLL;HAVE_CONFIG_H;WINVER=0x0500;_WIN32_WINNT=0x0500;_WIN32_IE=0x0501;WIN32_THREADS;FD_SETSIZE=1024;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>

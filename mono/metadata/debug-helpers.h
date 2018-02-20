@@ -41,6 +41,7 @@ MonoMethod*     mono_method_desc_search_in_class (MonoMethodDesc *desc, MonoClas
 MonoMethod*     mono_method_desc_search_in_image (MonoMethodDesc *desc, MonoImage *image);
 
 char*           mono_method_full_name (MonoMethod *method, gboolean signature);
+char*           mono_method_half_name (MonoMethod *method, gboolean signature);
 
 char*           mono_field_full_name (MonoClassField *field);
 

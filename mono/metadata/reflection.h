@@ -88,6 +88,7 @@ MonoCustomAttrInfo* mono_custom_attrs_from_param    (MonoMethod *method, guint32
 gboolean            mono_custom_attrs_has_attr      (MonoCustomAttrInfo *ainfo, MonoClass *attr_klass);
 MonoObject*         mono_custom_attrs_get_attr      (MonoCustomAttrInfo *ainfo, MonoClass *attr_klass);
 void                mono_custom_attrs_free          (MonoCustomAttrInfo *ainfo);
+void                mono_custom_attrs_free_cached   (MonoCustomAttrInfo *ainfo);
 
 
 #define MONO_DECLSEC_ACTION_MIN		0x1

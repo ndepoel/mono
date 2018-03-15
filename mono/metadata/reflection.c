@@ -1228,6 +1228,15 @@ mono_custom_attrs_free (MonoCustomAttrInfo *ainfo)
 		g_free (ainfo);
 }
 
+void
+mono_custom_attrs_free_cached (MonoCustomAttrInfo *ainfo)
+{
+	if (ainfo) {
+		g_assert (ainfo->cached);
+		g_free (ainfo);
+	}
+}
+
 /*
  * idx is the table index of the object
  * type is one of MONO_CUSTOM_ATTR_*

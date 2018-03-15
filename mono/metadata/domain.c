@@ -1199,7 +1199,7 @@ mono_domain_create (void)
 	domain->jit_info_table = jit_info_table_new (domain);
 	domain->jit_info_free_queue = NULL;
 	domain->finalizable_objects_hash = g_hash_table_new (mono_aligned_addr_hash, NULL);
-	domain->class_custom_attributes = g_hash_table_new_full (mono_aligned_addr_hash, NULL, NULL, mono_custom_attrs_free);
+	domain->class_custom_attributes = g_hash_table_new_full (mono_aligned_addr_hash, NULL, NULL, mono_custom_attrs_free_cached);
 #ifndef HAVE_SGEN_GC
 	domain->track_resurrection_handles_hash = g_hash_table_new (mono_aligned_addr_hash, NULL);
 #endif

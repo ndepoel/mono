@@ -1228,15 +1228,6 @@ mono_custom_attrs_free (MonoCustomAttrInfo *ainfo)
 		g_free (ainfo);
 }
 
-void
-mono_custom_attrs_free_cached (MonoCustomAttrInfo *ainfo)
-{
-	if (ainfo) {
-		g_assert (ainfo->cached);
-		g_free (ainfo);
-	}
-}
-
 /*
  * idx is the table index of the object
  * type is one of MONO_CUSTOM_ATTR_*
@@ -8393,18 +8384,15 @@ MonoCustomAttrInfo*
 mono_custom_attrs_from_class (MonoClass *klass)
 {
 	MonoDomain* domain = mono_domain_get();
-
-	// Hashing attributes as a lookup optimization.
-	MonoCustomAttrInfo* hashed_attribute_info = (MonoCustomAttrInfo*)g_hash_table_lookup(domain->class_custom_attributes, klass);
+	MonoCustomAttrInfo* cattrs;
 	guint32 idx;
-
-	if(hashed_attribute_info != NULL) 
-	{
-		return hashed_attribute_info;
-	}
 
 	if (klass->generic_class)
 		klass = klass->generic_class->container_class;
+
+	cattrs = InterlockedCompareExchangePointer(&klass->cattrs, NULL, NULL);
+	if (cattrs)
+		return cattrs;
 
 	if (klass->image->dynamic)
 		return lookup_custom_attr (klass->image, klass);
@@ -8419,13 +8407,33 @@ mono_custom_attrs_from_class (MonoClass *klass)
 		idx |= MONO_CUSTOM_ATTR_TYPEDEF;
 	}
 
-	hashed_attribute_info = mono_custom_attrs_from_index (klass->image, idx);
+	cattrs = mono_custom_attrs_from_index (klass->image, idx);
 
-	g_hash_table_insert(domain->class_custom_attributes, klass, hashed_attribute_info);
-	/* Tell users not to free hashed_attribute_info */
-	if (hashed_attribute_info != NULL)
-		hashed_attribute_info->cached = 1;
-	return hashed_attribute_info;
+	if (cattrs) {
+		size_t cattrs_size;
+		MonoCustomAttrInfo* cattrs_orig;
+		MonoCustomAttrInfo* cattr_cached;
+
+		/* make copy from image mempool that is cached */
+		cattrs_size = MONO_SIZEOF_CUSTOM_ATTR_INFO + sizeof (MonoCustomAttrEntry) * cattrs->num_attrs;
+		cattr_cached = mono_image_alloc (klass->image, cattrs_size);
+		memcpy (cattr_cached, cattrs, cattrs_size);
+		cattr_cached->cached = 1;
+
+		/* free non-cached version */
+		mono_custom_attrs_free (cattrs);
+
+		cattrs = cattr_cached;
+		cattrs_orig = InterlockedCompareExchangePointer(&klass->cattrs, cattrs, NULL);
+
+		if (cattrs_orig) {
+			/* Race to cache and another thread won.
+			 * No need to free as we used image mempool for allocation. */
+			cattrs = cattrs_orig;
+		}
+	}
+
+	return cattrs;
 }
 
 MonoCustomAttrInfo*

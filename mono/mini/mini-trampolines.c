@@ -179,6 +179,22 @@ mono_convert_imt_slot_to_vtable_slot (gpointer* slot, mgreg_t *regs, guint8 *cod
 		interface_offset = mono_class_interface_offset (vt->klass, imt_method->klass);
 
 		if (interface_offset < 0) {
+			int i = 0;
+			for (i = 0; i < vt->klass->interface_count; i++)
+			{
+				MonoClass* itf = vt->klass->interfaces[i];
+				if (mono_class_is_assignable_from (imt_method->klass, itf)) {
+					char* method_name = mono_method_full_name (method, TRUE);
+					char* msg = g_strdup_printf ("Method '%s' appears to use covariance and/or contravariance which is not supported. Please remove usage or enable the new scripting runtime version in Player Settings. Detected Error: %s doesn't implement interface %s",
+						method_name,
+						mono_type_get_name_full (&vt->klass->byval_arg, 0),
+						mono_type_get_name_full (&imt_method->klass->byval_arg, 0));
+					MonoException* ex = mono_get_exception_invalid_operation (msg);
+					g_free (method_name);
+					g_free (msg);
+					mono_raise_exception (ex);
+				}
+			}
 			g_print ("%s doesn't implement interface %s\n", mono_type_get_name_full (&vt->klass->byval_arg, 0), mono_type_get_name_full (&imt_method->klass->byval_arg, 0));
 			g_assert_not_reached ();
 		}

@@ -4,6 +4,7 @@
 #include <mono/metadata/class.h>
 #include <mono/metadata/object.h>
 #include <mono/metadata/mempool.h>
+#include <mono/metadata/reflection.h>
 #include <mono/io-layer/io-layer.h>
 #include "mono/utils/mono-compiler.h"
 #include "mono/utils/mono-error.h"
@@ -356,6 +357,9 @@ struct _MonoClass {
 
 	MonoClass  *parent;
 	MonoClass  *nested_in;
+
+	/* cached custom attributes for the class */
+	MonoCustomAttrInfo* cattrs;
 
 	MonoImage *image;
 	const char *name;

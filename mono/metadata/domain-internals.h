@@ -254,9 +254,6 @@ struct _MonoDomain {
 	GHashTable	   *generic_virtual_cases;
 	MonoThunkFreeList **thunk_free_lists;
 
-	/* Hashing class attributes as a lookup optimization */
-	GHashTable	*class_custom_attributes;
-
 	/* Information maintained by the JIT engine */
 	gpointer runtime_info;
 

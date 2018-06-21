@@ -1789,19 +1789,6 @@ mono_domain_assembly_preload (MonoAssemblyName *aname,
 	return result;
 }
 
-/*
- * Check whenever a given assembly was already loaded in the current appdomain.
- */
-
-static gboolean ignore_version_and_key_when_finding_assemblies_already_loaded = FALSE;
-
-void
-mono_set_ignore_version_and_key_when_finding_assemblies_already_loaded(gboolean value)
-{
-	ignore_version_and_key_when_finding_assemblies_already_loaded = value;
-}
-
-
 static MonoAssembly *
 mono_domain_assembly_search (MonoAssemblyName *aname,
 							 gpointer user_data)
@@ -1810,12 +1797,13 @@ mono_domain_assembly_search (MonoAssemblyName *aname,
 	GSList *tmp;
 	MonoAssembly *ass;
 	gboolean refonly = GPOINTER_TO_UINT (user_data);
+	const gboolean strong_name = aname->public_key_token[0] != 0;
 
 	mono_domain_assemblies_lock (domain);
 	for (tmp = domain->domain_assemblies; tmp; tmp = tmp->next) {
 		ass = tmp->data;
 		/* Dynamic assemblies can't match here in MS.NET */
-		if (ass->dynamic || refonly != ass->ref_only || !mono_assembly_names_equal2 (aname, &ass->aname, ignore_version_and_key_when_finding_assemblies_already_loaded))
+		if (ass->dynamic || refonly != ass->ref_only || !mono_assembly_names_equal2 (aname, &ass->aname, !strong_name))
 			continue;
 
 		mono_domain_assemblies_unlock (domain);

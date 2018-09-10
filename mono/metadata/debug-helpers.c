@@ -794,6 +794,48 @@ mono_method_full_name (MonoMethod *method, gboolean signature)
 	return res;
 }
 
+char *
+mono_method_half_name (MonoMethod *method, gboolean signature)
+{
+    char *res;
+    char *inst_desc = NULL;
+
+    if (method->is_inflated && ((MonoMethodInflated*)method)->context.method_inst) {
+        GString *str = g_string_new ("");
+        g_string_append (str, "<");
+        ginst_get_desc (str, ((MonoMethodInflated*)method)->context.method_inst);
+        g_string_append (str, ">");
+
+        inst_desc = str->str;
+        g_string_free (str, FALSE);
+    } else if (method->is_generic) {
+        MonoGenericContainer *container = mono_method_get_generic_container (method);
+
+        GString *str = g_string_new ("");
+        g_string_append (str, "<");
+        ginst_get_desc (str, container->context.method_inst);
+        g_string_append (str, ">");
+
+        inst_desc = str->str;
+        g_string_free (str, FALSE);
+    }
+
+    if (signature) {
+        char *tmpsig = mono_signature_get_desc (mono_method_signature (method), TRUE);
+
+        res = g_strdup_printf ("%s%s (%s)",
+            method->name, inst_desc ? inst_desc : "", tmpsig);
+        g_free (tmpsig);
+    } else {
+        res = g_strdup_printf ("%s%s",
+            method->name, inst_desc ? inst_desc : "");
+    }
+
+    g_free (inst_desc);
+
+    return res;
+}
+
 static const char*
 print_name_space (MonoClass *klass)
 {
